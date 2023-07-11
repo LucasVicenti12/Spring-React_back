@@ -1,6 +1,8 @@
 package com.example.notes
 
-import com.example.notes.Internationalization.Notes.infra.repository.database.NoteDatabase
+import com.example.notes.Internationalization.Region.infra.repository.database.CityDatabase
+import com.example.notes.Internationalization.Region.infra.repository.database.RegionDatabase
+import com.example.notes.core.contact.infra.repository.database.ContactTypeDatabase
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -13,7 +15,9 @@ class NotesApplication
 fun main(args: Array<String>) {
 	Database.connect("jdbc:mysql://localhost:3306/newnotesdb", driver = "com.mysql.cj.jdbc.Driver", user = "root", password = "***")
 	transaction {
-		SchemaUtils.create(NoteDatabase)
+		SchemaUtils.create(CityDatabase)
+		SchemaUtils.create(RegionDatabase)
+		SchemaUtils.create(ContactTypeDatabase)
 	}
 	runApplication<NotesApplication>(*args)
 }
