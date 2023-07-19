@@ -7,8 +7,10 @@ import com.example.notes.Internationalization.Client.domain.usecases.ClientUseCa
 import com.example.notes.Internationalization.Client.domain.usecases.response.ClientArrayResponse
 import com.example.notes.Internationalization.Client.domain.usecases.response.ClientResponse
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
 import java.util.*
 
+@Service
 class ClientUseCaseImplementation(private val clientRepository: ClientRepository) : ClientUseCase {
     companion object {
         private val logger = LoggerFactory.getLogger(ClientUseCaseImplementation::class.java)

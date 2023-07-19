@@ -12,4 +12,8 @@ object ClientDataBase : Table("client") {
     var situation = integer("situation_code")
     var description = text("description").nullable()
     var address = text("address").nullable()
+
+    init {
+        PrimaryKey(code)
+    }
 }
