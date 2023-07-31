@@ -6,7 +6,7 @@ import org.jetbrains.exposed.sql.Table
 object ClientDataBase : Table("client") {
     var uuid = uuid("uuid").uniqueIndex()
     var name = varchar("name", 250).nullable()
-    var code = integer("code")
+    var code = integer("code").uniqueIndex()
     var identifier = varchar("identifier", 250).nullable()
     var regionCode = reference("region_code", RegionDatabase.code).nullable()
     var situation = integer("situation_code")

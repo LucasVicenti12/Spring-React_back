@@ -46,6 +46,7 @@ class RegionUseCaseImplementation(private val regionRepository: RegionRepository
 
     override fun updateRegion(region: Region): RegionResponse {
         return try{
+                println(region.description)
             if(region.description == ""){
                 return RegionResponse(error = REGION_DESCRIPTION_ERROR)
             }

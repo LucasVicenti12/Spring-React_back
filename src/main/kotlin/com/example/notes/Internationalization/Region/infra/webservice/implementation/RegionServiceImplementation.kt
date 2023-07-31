@@ -24,8 +24,9 @@ class RegionServiceImplementation (private val regionUseCase: RegionUseCase) : R
         TODO("Not yet implemented")
     }
 
-    override fun updateRegion(region: Region): RegionResponse {
-        TODO("Not yet implemented")
+    @PostMapping("/update")
+    override fun updateRegion(@RequestBody region: Region): RegionResponse {
+        return regionUseCase.updateRegion(region)
     }
 
     @GetMapping
