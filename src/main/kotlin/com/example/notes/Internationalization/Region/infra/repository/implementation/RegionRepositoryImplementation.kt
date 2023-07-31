@@ -39,7 +39,16 @@ class RegionRepositoryImplementation : RegionRepository {
     }
 
     override fun getRegionByUUID(regionUUID: UUID): Region? {
-        TODO("Not yet implemented")
+        return transaction {
+            RegionDatabase.select( Op.build { RegionDatabase.uuid eq regionUUID } ).map {
+                Region(
+                    uuid = it[RegionDatabase.uuid],
+                    description = it[RegionDatabase.description],
+                    code = it[RegionDatabase.code],
+                    city = getCitiesByRegionUUID(it[RegionDatabase.uuid])
+                )
+            }.firstOrNull()
+        }
     }
 
     override fun updateRegion(region: Region): Region? {
