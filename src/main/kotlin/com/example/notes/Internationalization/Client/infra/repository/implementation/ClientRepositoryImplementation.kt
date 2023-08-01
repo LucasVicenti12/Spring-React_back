@@ -16,23 +16,42 @@ import java.util.*
 
 @Service
 class ClientRepositoryImplementation : ClientRepository {
-    override fun createClient(client: Client): Client? {
-        transaction {
-            ClientDataBase.insert {
-                it[uuid] = client.uuid!!
-                it[name] = client.name!!
-                it[code] = client.code!!
-                it[identifier] = client.identifier!!
-                it[regionCode] = client.regionCode!!
-                it[situation] = client.situation!!
-                it[description] = client.description!!
-                it[address] = client.address
+    override fun createOrUpdateClient(client: Client): Client? {
+        if (client.uuid == null) {
+            client.uuid = UUID.randomUUID()
+            transaction {
+                ClientDataBase.insert {
+                    it[uuid] = client.uuid!!
+                    it[name] = client.name!!
+                    it[code] = client.code!!
+                    it[identifier] = client.identifier!!
+                    it[regionCode] = client.regionCode!!
+                    it[situation] = client.situation!!
+                    it[description] = client.description!!
+                    it[address] = client.address
+                }
+                client
             }
-            client
+        } else {
+            transaction {
+                ClientDataBase.update({ Op.build { ClientDataBase.code eq client.code!! } }) {
+                    it[uuid] = client.uuid!!
+                    it[name] = client.name!!
+                    it[code] = client.code!!
+                    it[identifier] = client.identifier!!
+                    it[regionCode] = client.regionCode!!
+                    it[situation] = client.situation!!
+                    it[description] = client.description!!
+                    it[address] = client.address
+                }
+                client
+            }
         }
+        deleteContactsByClientCode(client!!.code!!)
         client.contacts?.map {
             val contact: Contact? = it
             contact?.uuid = UUID.randomUUID()
+            contact?.contactType = getContactTypeByTypeCode(contact!!.contactTypeCode!!)
             transaction {
                 ClientContactDataBase.insert {
                     it[uuid] = contact!!.uuid!!
@@ -49,58 +68,6 @@ class ClientRepositoryImplementation : ClientRepository {
         return transaction {
             ClientDataBase.select(Op.build { ClientDataBase.uuid eq uuid }).map {
                 Client(
-                    uuid = it[ClientDataBase.uuid],
-                    name = it[ClientDataBase.name],
-                    code = it[ClientDataBase.code],
-                    identifier = it[ClientDataBase.identifier],
-                    regionCode = it[ClientDataBase.regionCode],
-                    situation = it[ClientDataBase.situation],
-                    description = it[ClientDataBase.description],
-                    address = it[ClientDataBase.address],
-                    contacts = getContactsByClientCode(it[ClientDataBase.code])
-                )
-            }.firstOrNull()
-        }
-    }
-
-    override fun updateClient(client: Client): Client? {
-        transaction {
-            ClientDataBase.update {
-                Op.build { uuid eq client.uuid!! }
-                it[uuid] = client.uuid!!
-                it[name] = client.name!!
-                it[code] = client.code!!
-                it[identifier] = client.identifier!!
-                it[regionCode] = client.regionCode!!
-                it[situation] = client.situation!!
-                it[description] = client.description!!
-                it[address] = client.address
-            }
-            client
-        }
-        println(client.code)
-        deleteContactByClientCode(client.code!!)
-        client.contacts?.map {
-            val contact: Contact? = it
-            contact?.uuid = UUID.randomUUID()
-            transaction {
-                ClientContactDataBase.insert {
-                    it[uuid] = contact!!.uuid!!
-                    it[contactTypeCode] = contact!!.contactTypeCode!!
-                    it[description] = contact!!.description!!
-                    it[clientCode] = contact.clientCode!!
-                }.resultedValues!!
-            }
-            contact
-        }
-        return client
-    }
-
-    override fun listClient(): List<Client> {
-        return transaction {
-            ClientDataBase
-                .selectAll().map {
-                    Client(
                         uuid = it[ClientDataBase.uuid],
                         name = it[ClientDataBase.name],
                         code = it[ClientDataBase.code],
@@ -110,8 +77,27 @@ class ClientRepositoryImplementation : ClientRepository {
                         description = it[ClientDataBase.description],
                         address = it[ClientDataBase.address],
                         contacts = getContactsByClientCode(it[ClientDataBase.code])
-                    )
-                }
+                )
+            }.firstOrNull()
+        }
+    }
+
+    override fun listClient(): List<Client> {
+        return transaction {
+            ClientDataBase
+                    .selectAll().map {
+                        Client(
+                                uuid = it[ClientDataBase.uuid],
+                                name = it[ClientDataBase.name],
+                                code = it[ClientDataBase.code],
+                                identifier = it[ClientDataBase.identifier],
+                                regionCode = it[ClientDataBase.regionCode],
+                                situation = it[ClientDataBase.situation],
+                                description = it[ClientDataBase.description],
+                                address = it[ClientDataBase.address],
+                                contacts = getContactsByClientCode(it[ClientDataBase.code])
+                        )
+                    }
         }
     }
 
@@ -119,15 +105,15 @@ class ClientRepositoryImplementation : ClientRepository {
         return transaction {
             ClientDataBase.select(Op.build { ClientDataBase.code eq code!! }).map {
                 Client(
-                    uuid = it[ClientDataBase.uuid],
-                    name = it[ClientDataBase.name],
-                    code = it[ClientDataBase.code],
-                    identifier = it[ClientDataBase.identifier],
-                    regionCode = it[ClientDataBase.regionCode],
-                    situation = it[ClientDataBase.situation],
-                    description = it[ClientDataBase.description],
-                    address = it[ClientDataBase.address],
-                    contacts = getContactsByClientCode(it[ClientDataBase.code])
+                        uuid = it[ClientDataBase.uuid],
+                        name = it[ClientDataBase.name],
+                        code = it[ClientDataBase.code],
+                        identifier = it[ClientDataBase.identifier],
+                        regionCode = it[ClientDataBase.regionCode],
+                        situation = it[ClientDataBase.situation],
+                        description = it[ClientDataBase.description],
+                        address = it[ClientDataBase.address],
+                        contacts = getContactsByClientCode(it[ClientDataBase.code])
                 )
             }.firstOrNull()
         }
@@ -137,56 +123,57 @@ class ClientRepositoryImplementation : ClientRepository {
         return transaction {
             ClientDataBase.select(Op.build { ClientDataBase.identifier eq identifier }).map {
                 Client(
-                    uuid = it[ClientDataBase.uuid],
-                    name = it[ClientDataBase.name],
-                    code = it[ClientDataBase.code],
-                    identifier = it[ClientDataBase.identifier],
-                    regionCode = it[ClientDataBase.regionCode],
-                    situation = it[ClientDataBase.situation],
-                    description = it[ClientDataBase.description],
-                    address = it[ClientDataBase.address],
-                    contacts = getContactsByClientCode(it[ClientDataBase.code])
+                        uuid = it[ClientDataBase.uuid],
+                        name = it[ClientDataBase.name],
+                        code = it[ClientDataBase.code],
+                        identifier = it[ClientDataBase.identifier],
+                        regionCode = it[ClientDataBase.regionCode],
+                        situation = it[ClientDataBase.situation],
+                        description = it[ClientDataBase.description],
+                        address = it[ClientDataBase.address],
+                        contacts = getContactsByClientCode(it[ClientDataBase.code])
                 )
             }.firstOrNull()
         }
     }
 
-    fun deleteContactByClientCode(code: Int) {
+    fun deleteContactsByClientCode(code: Int) {
         transaction {
             ClientContactDataBase.deleteWhere { clientCode eq code }
         }
-    }
+    };
+
 
     fun getContactsByClientCode(code: Int): List<Contact> {
         return transaction {
             ClientContactDataBase
-                .select(
-                    Op.build { ClientContactDataBase.clientCode eq code }
-                ).map {
-                    Contact(
-                        uuid = it[ClientContactDataBase.uuid],
-                        contactTypeCode = it[ClientContactDataBase.contactTypeCode],
-                        description = it[ClientContactDataBase.description],
-                        createdAt = it[ClientContactDataBase.createdAt],
-                        clientCode = it[ClientContactDataBase.clientCode],
-                        contactType = getContactTypeByTypeCode(it[ClientContactDataBase.contactTypeCode])
-                    )
-                }
+                    .select(
+                            Op.build { ClientContactDataBase.clientCode eq code }
+                    ).map {
+                        Contact(
+                                uuid = it[ClientContactDataBase.uuid],
+                                contactTypeCode = it[ClientContactDataBase.contactTypeCode],
+                                description = it[ClientContactDataBase.description],
+                                createdAt = it[ClientContactDataBase.createdAt],
+                                clientCode = it[ClientContactDataBase.clientCode],
+                                contactType = getContactTypeByTypeCode(it[ClientContactDataBase.contactTypeCode])
+                        )
+                    }
         }
     }
 
     fun getContactTypeByTypeCode(code: Int): ContactType {
         return transaction {
             ContactTypeDatabase
-                .select(
-                    Op.build { ContactTypeDatabase.code eq code }
-                ).map {
-                    ContactType(
-                        uuid = it[ContactTypeDatabase.uuid],
-                        label = it[ContactTypeDatabase.label],
-                        code = it[ContactTypeDatabase.code]
-                    )
-                }.firstOrNull()!!
+                    .select(
+                            Op.build { ContactTypeDatabase.code eq code }
+                    ).map {
+                        ContactType(
+                                uuid = it[ContactTypeDatabase.uuid],
+                                label = it[ContactTypeDatabase.label],
+                                code = it[ContactTypeDatabase.code]
+                        )
+                    }.firstOrNull()!!
         }
     }
 }

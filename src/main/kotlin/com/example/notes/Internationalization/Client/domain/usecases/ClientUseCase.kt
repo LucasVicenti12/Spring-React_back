@@ -6,8 +6,7 @@ import com.example.notes.Internationalization.Client.domain.usecases.response.Cl
 import java.util.*
 
 interface ClientUseCase {
-    fun createClient(client: Client) : ClientResponse
+    fun createOrUpdateClient(client: Client) : ClientResponse
     fun getClientByUUID(uuid: UUID) : ClientResponse
-    fun updateClient(client: Client) : ClientResponse
     fun listClient() : ClientArrayResponse
 }

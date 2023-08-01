@@ -18,18 +18,13 @@ import java.util.*
 class ClientServiceImplementation(private val clientUseCase: ClientUseCase) : ClientService {
 
     @PostMapping
-    override fun createClient(@RequestBody client: Client): ClientResponse {
-        return clientUseCase.createClient(client)
+    override fun createOrUpdateClient(@RequestBody client: Client): ClientResponse {
+        return clientUseCase.createOrUpdateClient(client)
     }
 
     @GetMapping("/getByUUID/{uuid}")
     override fun getClientByUUID(@PathVariable("uuid") uuid: UUID): ClientResponse {
         return clientUseCase.getClientByUUID(uuid)
-    }
-
-    @PostMapping("/update")
-    override fun updateClient(@RequestBody client: Client): ClientResponse {
-        return clientUseCase.updateClient(client)
     }
 
     @GetMapping

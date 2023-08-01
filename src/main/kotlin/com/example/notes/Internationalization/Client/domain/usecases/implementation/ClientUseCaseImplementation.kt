@@ -16,12 +16,12 @@ class ClientUseCaseImplementation(private val clientRepository: ClientRepository
         private val logger = LoggerFactory.getLogger(ClientUseCaseImplementation::class.java)
     }
 
-    override fun createClient(client: Client): ClientResponse {
+    override fun createOrUpdateClient(client: Client): ClientResponse {
         return try {
             if (client.code == 0) {
                 return ClientResponse(error = CLIENT_CODE_IS_INVALID)
             }
-            if (clientRepository.getClientByCode(client.code!!) != null) {
+            if (client.uuid == null && clientRepository.getClientByCode(client.code!!) != null) {
                 return ClientResponse(error = CLIENT_CODE_ALREADY_EXISTS)
             }
             if (client.contacts!!.isEmpty()) {
@@ -36,11 +36,10 @@ class ClientUseCaseImplementation(private val clientRepository: ClientRepository
             if (client.regionCode == 0) {
                 return ClientResponse(error = CLIENT_REGION_IS_INVALID)
             }
-            if (clientRepository.getClientByIdentifier(client.identifier!!) != null) {
+            if (client.uuid == null && clientRepository.getClientByIdentifier(client.identifier!!) != null) {
                 return ClientResponse(error = CLIENT_IDENTIFIER_ALREADY_EXISTS)
             }
-            client.uuid = UUID.randomUUID()
-            ClientResponse(client = clientRepository.createClient(client), error = null)
+            ClientResponse(client = clientRepository.createOrUpdateClient(client), error = null)
         } catch (e: Exception) {
             logger.error("CLIENT", e)
             ClientResponse(error = CLIENT_GENERIC_ERROR)
@@ -56,23 +55,6 @@ class ClientUseCaseImplementation(private val clientRepository: ClientRepository
         }
     }
 
-    override fun updateClient(client: Client): ClientResponse {
-        return try {
-            if (client.name == "") {
-                return ClientResponse(error = CLIENT_NAME_IS_INVALID)
-            }
-            if (client.address == "") {
-                return ClientResponse(error = CLIENT_ADDRESS_IS_INVALID)
-            }
-            if (client.regionCode == 0) {
-                return ClientResponse(error = CLIENT_REGION_IS_INVALID)
-            }
-            ClientResponse(client = clientRepository.updateClient(client), error = null)
-        } catch (e: Exception) {
-            logger.error("CLIENT", e)
-            return ClientResponse(error = CLIENT_GENERIC_ERROR)
-        }
-    }
 
     override fun listClient(): ClientArrayResponse {
         return try {
