@@ -35,11 +35,15 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 
 	implementation("org.jetbrains.exposed:exposed-core:0.40.1")
 	implementation("org.jetbrains.exposed:exposed-jdbc:0.40.1")
 	implementation("org.jetbrains.exposed:exposed-java-time:0.40.1")
 	implementation("org.jetbrains.exposed:exposed-spring-boot-starter:0.40.1")
+
+	implementation("org.postgresql:postgresql")
+	runtimeOnly("org.postgresql:postgresql")
 
 }
 
