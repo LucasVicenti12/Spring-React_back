@@ -1,6 +1,5 @@
-package com.example.notes.Internationalization.product.domain.entities
+package com.example.notes.Internationalization.Product.domain.entities
 
-import java.time.LocalDateTime
 import java.util.UUID
 
 class Product(
@@ -12,7 +11,7 @@ class Product(
         var category : Category? = Category.Fluffy,
         var productionCost: Double? = 0.0,
         var validityPeriod: Int? = 0,
-        var weigth: Double? = 0.0,
+        var weight: Double? = 0.0,
         var width: Double? = 0.0,
         var height: Double? = 0.0,
         var length: Double? = 0.0,

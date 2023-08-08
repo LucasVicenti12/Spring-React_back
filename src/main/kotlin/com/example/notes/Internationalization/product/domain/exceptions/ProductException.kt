@@ -1,4 +1,4 @@
-package com.example.notes.Internationalization.product.domain.exceptions
+package com.example.notes.Internationalization.Product.domain.exceptions
 
 import com.example.notes.core.shared.error.GenericError
 
