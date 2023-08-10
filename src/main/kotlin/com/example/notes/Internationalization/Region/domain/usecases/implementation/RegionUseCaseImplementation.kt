@@ -16,7 +16,7 @@ import java.util.*
 @Service
 class RegionUseCaseImplementation(private val regionRepository: RegionRepository) : RegionUseCase{
     companion object{
-        private val logger = LoggerFactory.getLogger(CityUseCaseImplementation::class.java)
+        private val logger = LoggerFactory.getLogger(RegionUseCaseImplementation::class.java)
     }
 
     override fun createRegion(region: Region): RegionResponse {
