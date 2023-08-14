@@ -6,6 +6,7 @@ import com.example.notes.Internationalization.Region.domain.repository.RegionRep
 import com.example.notes.Internationalization.Region.infra.repository.database.CityDatabase
 import com.example.notes.Internationalization.Region.infra.repository.database.RegionDatabase
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Service
 import java.util.*
@@ -27,9 +28,9 @@ class RegionRepositoryImplementation : RegionRepository {
             transaction {
                 CityDatabase.insert {
                     it[uuid] = city?.uuid!!
-                    it[code] = city?.code!!
-                    it[description] = city?.description!!
-                    it[cityUF] = city?.cityUF!!
+                    it[code] = city.code!!
+                    it[description] = city.description!!
+                    it[cityUF] = city.cityUF!!
                     it[regionUUID] = region.uuid!!
                 }
             }
@@ -38,11 +39,42 @@ class RegionRepositoryImplementation : RegionRepository {
     }
 
     override fun getRegionByUUID(regionUUID: UUID): Region? {
-        TODO("Not yet implemented")
+        return transaction {
+            RegionDatabase.select( Op.build { RegionDatabase.uuid eq regionUUID } ).map {
+                Region(
+                    uuid = it[RegionDatabase.uuid],
+                    description = it[RegionDatabase.description],
+                    code = it[RegionDatabase.code],
+                    city = getCitiesByRegionUUID(it[RegionDatabase.uuid])
+                )
+            }.firstOrNull()
+        }
     }
 
     override fun updateRegion(region: Region): Region? {
-        TODO("Not yet implemented")
+        transaction {
+            RegionDatabase.update({
+                RegionDatabase.uuid eq region.uuid!!
+            }) {
+                it[description] = region.description!!
+            }
+            region
+        }
+        deleteAllCitiesByRegionUUID(region.uuid!!)
+        region.city?.map {
+            val city: City? = it
+            city?.uuid = UUID.randomUUID()
+            transaction {
+                CityDatabase.insert {
+                    it[uuid] = city?.uuid!!
+                    it[code] = city?.code!!
+                    it[description] = city?.description!!
+                    it[cityUF] = city?.cityUF!!
+                    it[regionUUID] = region.uuid!!
+                }
+            }
+        }
+        return region
     }
 
     override fun listAllRegions(): List<Region> {
@@ -72,6 +104,12 @@ class RegionRepositoryImplementation : RegionRepository {
                         code = it[CityDatabase.code]
                     )
                 }
+        }
+    }
+
+    fun deleteAllCitiesByRegionUUID(regionUUID: UUID){
+        transaction {
+            CityDatabase.deleteWhere { Op.build { CityDatabase.regionUUID greaterEq regionUUID } }
         }
     }
 }
