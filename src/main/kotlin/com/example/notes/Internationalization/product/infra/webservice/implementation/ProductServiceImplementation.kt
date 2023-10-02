@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
 @RequestMapping("/product")
@@ -23,7 +24,7 @@ class ProductServiceImplementation (private val productUseCase: ProductUseCase) 
     }
 
     @GetMapping("/getbyUUID/{productUUID}")
-    override fun getProductByUUID(@PathVariable("productUUID") productUUID: String): ProductResponse {
+    override fun getProductByUUID(@PathVariable("productUUID") productUUID: UUID): ProductResponse {
         return productUseCase.getProductByUUID(productUUID)
     }
 

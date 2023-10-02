@@ -1,5 +1,6 @@
 package com.example.notes.Internationalization.Product.infra.repository.implementation
 
+import com.example.notes.Internationalization.Product.domain.entities.Category
 import com.example.notes.Internationalization.Product.domain.entities.Product
 import com.example.notes.Internationalization.Product.domain.repository.ProductRepository
 import com.example.notes.Internationalization.Product.infra.repository.database.ProductDatabase
@@ -20,7 +21,7 @@ class ProductRepositoryImplementation : ProductRepository {
                     it[description] = product.description!!
                     it[imageBase64] = product.imageBase64!!
                     it[code] = product.code!!
-                    it[category] = product.category.toString().toInt()!!
+                    it[category] = product.category.toString().toInt()
                     it[productionCost] = product.productionCost!!
                     it[validityPeriod] = product.validityPeriod!!
                     it[weight] = product.weight!!
@@ -38,7 +39,7 @@ class ProductRepositoryImplementation : ProductRepository {
                     it[name] = product.name!!
                     it[description] = product.description!!
                     it[imageBase64] = product.imageBase64!!
-                    it[category] = product.category.toString().toInt()!!
+                    it[category] = product.category.toString().toInt()
                     it[productionCost] = product.productionCost!!
                     it[validityPeriod] = product.validityPeriod!!
                     it[weight] = product.weight!!
@@ -62,7 +63,7 @@ class ProductRepositoryImplementation : ProductRepository {
                        description = it[ProductDatabase.description],
                        imageBase64 = it[ProductDatabase.imageBase64],
                        code = it[ProductDatabase.code],
-                       category = it[ProductDatabase.category],
+                       category = Category.valueOf(it[ProductDatabase.category].toString()),
                        productionCost = it[ProductDatabase.productionCost],
                        validityPeriod = it[ProductDatabase.validityPeriod],
                        weight = it[ProductDatabase.weight],
@@ -77,10 +78,48 @@ class ProductRepositoryImplementation : ProductRepository {
     }
 
     override fun getProductByCode(productCode: Int): Product? {
-        TODO("Not yet implemented")
+        return transaction {
+            ProductDatabase.select { ProductDatabase.code eq productCode }.map {
+                Product(
+                    uuid = it[ProductDatabase.uuid],
+                    name = it[ProductDatabase.name],
+                    description = it[ProductDatabase.description],
+                    imageBase64 = it[ProductDatabase.imageBase64],
+                    code = it[ProductDatabase.code],
+                    category = Category.valueOf(it[ProductDatabase.category].toString()),
+                    productionCost = it[ProductDatabase.productionCost],
+                    validityPeriod = it[ProductDatabase.validityPeriod],
+                    weight = it[ProductDatabase.weight],
+                    width = it[ProductDatabase.width],
+                    height = it[ProductDatabase.height],
+                    length = it[ProductDatabase.length],
+                    volume = it[ProductDatabase.volume],
+                    situation = it[ProductDatabase.situation]
+                )
+            }.firstOrNull()
+        }
     }
 
     override fun listAllProducts(): List<Product>? {
-        TODO("Not yet implemented")
+        return transaction {
+            ProductDatabase.selectAll().map {
+                Product(
+                    uuid = it[ProductDatabase.uuid],
+                    name = it[ProductDatabase.name],
+                    description = it[ProductDatabase.description],
+                    imageBase64 = it[ProductDatabase.imageBase64],
+                    code = it[ProductDatabase.code],
+                    category = Category.valueOf(it[ProductDatabase.category].toString()),
+                    productionCost = it[ProductDatabase.productionCost],
+                    validityPeriod = it[ProductDatabase.validityPeriod],
+                    weight = it[ProductDatabase.weight],
+                    width = it[ProductDatabase.width],
+                    height = it[ProductDatabase.height],
+                    length = it[ProductDatabase.length],
+                    volume = it[ProductDatabase.volume],
+                    situation = it[ProductDatabase.situation]
+                )
+            }
+        }
     }
 }

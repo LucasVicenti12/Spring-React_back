@@ -7,8 +7,10 @@ import com.example.notes.Internationalization.Product.domain.usecases.ProductUse
 import com.example.notes.Internationalization.Product.domain.usecases.response.ProductArrayResponse
 import com.example.notes.Internationalization.Product.domain.usecases.response.ProductResponse
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
 import java.util.UUID
 
+@Service
 class ProductUseCaseImplementation(private val productRepository: ProductRepository) : ProductUseCase {
 
     companion object {
@@ -67,7 +69,7 @@ class ProductUseCaseImplementation(private val productRepository: ProductReposit
 
     override fun getProductByCode(productCode: Int): ProductResponse {
         return try {
-            ProductResponse(product = productRepository.getProductByCode(productCode!!), error = null)
+            ProductResponse(product = productRepository.getProductByCode(productCode), error = null)
         } catch (e: Exception) {
             ProductResponse(error = PRODUCT_DEFAULT_ERROR)
         }

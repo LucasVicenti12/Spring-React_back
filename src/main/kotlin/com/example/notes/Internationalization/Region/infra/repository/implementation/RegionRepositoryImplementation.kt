@@ -22,14 +22,14 @@ class RegionRepositoryImplementation : RegionRepository {
             region
         }
         region.city?.map {
-            val city: City? = it
+            val city: City = it
             city?.uuid = UUID.randomUUID()
             transaction {
                 CityDatabase.insert {
                     it[uuid] = city?.uuid!!
-                    it[code] = city?.code!!
-                    it[description] = city?.description!!
-                    it[cityUF] = city?.cityUF!!
+                    it[code] = city.code!!
+                    it[description] = city.description!!
+                    it[cityUF] = city.cityUF!!
                     it[regionUUID] = region.uuid!!
                 }
             }

@@ -31,13 +31,13 @@ class ClientRepositoryImplementation : ClientRepository {
             client
         }
         client.contacts?.map {
-            val contact: Contact? = it
+            val contact: Contact = it
             contact?.uuid = UUID.randomUUID()
             transaction {
                 ClientContactDataBase.insert {
                     it[uuid] = contact!!.uuid!!
-                    it[contactTypeCode] = contact!!.contactTypeCode!!
-                    it[description] = contact!!.description!!
+                    it[contactTypeCode] = contact.contactTypeCode!!
+                    it[description] = contact.description!!
                     it[clientCode] = client.code!!
                 }
             }
@@ -81,13 +81,13 @@ class ClientRepositoryImplementation : ClientRepository {
         println(client.code)
         deleteContactByClientCode(client.code!!)
         client.contacts?.map {
-            val contact: Contact? = it
+            val contact: Contact = it
             contact?.uuid = UUID.randomUUID()
             transaction {
                 ClientContactDataBase.insert {
                     it[uuid] = contact!!.uuid!!
-                    it[contactTypeCode] = contact!!.contactTypeCode!!
-                    it[description] = contact!!.description!!
+                    it[contactTypeCode] = contact.contactTypeCode!!
+                    it[description] = contact.description!!
                     it[clientCode] = contact.clientCode!!
                 }.resultedValues!!
             }
