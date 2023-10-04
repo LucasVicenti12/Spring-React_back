@@ -7,8 +7,10 @@ import com.example.notes.Internationalization.Product.domain.usecases.ProductUse
 import com.example.notes.Internationalization.Product.domain.usecases.response.ProductArrayResponse
 import com.example.notes.Internationalization.Product.domain.usecases.response.ProductResponse
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
 import java.util.UUID
 
+@Service
 class ProductUseCaseImplementation(private val productRepository: ProductRepository) : ProductUseCase {
 
     companion object {
